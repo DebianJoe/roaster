@@ -57,7 +57,8 @@ INFO_PAGE = """
 #Set Up config reading for global options
 
 Config = ConfigParser.ConfigParser()
-Config.read("/home/joe/roaster/.roaster.conf")
+Config.read('/etc/roaster.conf')
+Config.read(os.path.expanduser('~/.roaster.conf'))
 
 # DEFAULT_PAGE can be overridden at the command line
 DEFAULT_PAGE = Config.get("default", "d_page")
