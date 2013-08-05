@@ -21,7 +21,7 @@
 # * fix tab relabelling
 # * search page interface
 # * custom button - w/o margins/padding to make tabs thin
-# * close button, function for people who don't auto-kill windows
+# * 
 
 from gettext import gettext as _
 
@@ -64,8 +64,8 @@ Config.read(os.path.expanduser('~/.roaster.conf'))
 DEFAULT_PAGE = Config.get("default", "d_page")
 HOME_PAGE = Config.get("homepage", "homepage")
 SEARCH_PAGE = "http://www.google.com/"
-MIN_FONT_SIZE = 10.0
-DEFAULT_ZOOM = 1.0
+MIN_FONT_SIZE = float(Config.get("default", "min_font_size"))
+DEFAULT_ZOOM = float(Config.get("default", "zoom"))
 LANGUAGE = "en"
 
 class BBToolbar(gtk.Toolbar):
@@ -90,9 +90,6 @@ class BBToolbar(gtk.Toolbar):
                                (gobject.TYPE_STRING,)),
         "new-tab-requested": (gobject.SIGNAL_RUN_FIRST,
                                   gobject.TYPE_NONE, ()),
-        "view-source-mode-requested": (gobject.SIGNAL_RUN_FIRST,
-                                       gobject.TYPE_NONE,
-                                       (gobject.TYPE_BOOLEAN, )),
         "info-dialog-requested": (gobject.SIGNAL_RUN_FIRST,
                                       gobject.TYPE_NONE, ()),
         }
@@ -102,44 +99,12 @@ class BBToolbar(gtk.Toolbar):
         gtk.Toolbar.__init__(self)
 
         if toolbar_enabled:
-            # add back button
-            self.BackBtn = gtk.ToolButton(gtk.STOCK_GO_BACK)
-            self.BackBtn.connect("clicked", self._go_back_cb)
-            self.BackBtn.set_tooltip_text("Go back")
-            self.BackBtn.set_sensitive(True)
-            self.insert(self.BackBtn, -1)
-            self.BackBtn.show()
-
-            # add forward button
-            self.FwdBtn = gtk.ToolButton(gtk.STOCK_GO_FORWARD)
-            self.FwdBtn.connect("clicked", self._go_forward_cb)
-            self.FwdBtn.set_tooltip_text("Go forward")
-            self.FwdBtn.set_sensitive(True)
-            self.insert(self.FwdBtn, -1)
-            self.FwdBtn.show()
-
-            # add home button
-            self.HomeBtn = gtk.ToolButton(gtk.STOCK_HOME)
-            self.HomeBtn.connect("clicked", self._go_home_cb)
-            self.HomeBtn.set_tooltip_text("Goto home page")
-            self.insert(gtk.SeparatorToolItem() ,-1 );
-            self.insert(self.HomeBtn, -1)
-            self.HomeBtn.show()
-
             # add search button
-            self.GoogleBtn = gtk.ToolButton(gtk.STOCK_FIND)
-            self.GoogleBtn.connect("clicked", self._google_cb)
-            self.GoogleBtn.set_tooltip_text("Search page")
-            self.insert(self.GoogleBtn, -1)
-            self.GoogleBtn.show()
-
-            # add refresh button
-            self.RefreshBtn = gtk.ToolButton(gtk.STOCK_REFRESH)
-            self.RefreshBtn.connect('clicked', self._refresh_cb)
-            self.RefreshBtn.set_tooltip_text("Reload current page")
-            self.insert(gtk.SeparatorToolItem() ,-1 );
-            self.insert(self.RefreshBtn, -1)
-            self.RefreshBtn.show()
+            #self.GoogleBtn = gtk.ToolButton(gtk.STOCK_FIND)
+            #self.GoogleBtn.connect("clicked", self._google_cb)
+            #self.GoogleBtn.set_tooltip_text("Search page")
+            #self.insert(self.GoogleBtn, -1)
+            #self.GoogleBtn.show()
 
             if location_enabled:
                 # location entry
@@ -152,28 +117,6 @@ class BBToolbar(gtk.Toolbar):
                 self.insert(entry_item, -1)
                 entry_item.show()
 
-            # add tab button
-            self.addTabBtn = gtk.ToolButton(gtk.STOCK_ADD)
-            self.addTabBtn.connect("clicked", self._add_tab_cb)
-            self.addTabBtn.set_tooltip_text("Add a new tab")
-            self.insert(self.addTabBtn, -1)
-            self.addTabBtn.show()
-
-            # add zoom in button
-            self.ZoomInBtn = gtk.ToolButton(gtk.STOCK_GO_UP)
-            self.ZoomInBtn.connect("clicked", self._zoom_in_cb)
-            self.ZoomInBtn.set_tooltip_text("Zoom in")
-            self.insert(gtk.SeparatorToolItem() ,-1 );
-            self.insert(self.ZoomInBtn, -1)
-            self.ZoomInBtn.show()
-
-
-            # add zoom out button
-            self.ZoomOutBtn = gtk.ToolButton(gtk.STOCK_GO_DOWN)
-            self.ZoomOutBtn.connect("clicked", self._zoom_out_cb)
-            self.ZoomOutBtn.set_tooltip_text("Zoom out")
-            self.insert(self.ZoomOutBtn, -1)
-            self.ZoomOutBtn.show()
 
     def _refresh_cb(self, button):
         self.emit("load-requested", self._entry.props.text)
@@ -190,9 +133,6 @@ class BBToolbar(gtk.Toolbar):
     def _zoom_out_cb(self, button):
         self.emit("zoom-out-requested")
 
-    def _go_home_cb(self, text):
-        self.emit("go-home-requested")
-
     def _google_cb(self, text):
         self.emit("google-requested")
 
@@ -205,8 +145,6 @@ class BBToolbar(gtk.Toolbar):
     def _add_tab_cb(self, button):
         self.emit("new-tab-requested")
 
-    def _view_source_mode_cb(self, button):
-        self.emit("view-source-mode-requested", button.get_active())
 
 class WebKitView(webkit.WebView):
 
@@ -290,9 +228,6 @@ def tab_label_style_set_cb (tab_label, style):
     metrics = context.get_metrics(tab_label.style.font_desc, context.get_language())
     char_width = metrics.get_approximate_digit_width()
     (width, height) = gtk.icon_size_lookup(gtk.ICON_SIZE_MENU)
-#    tab_label.set_size_request(16 * pango.PIXELS(char_width) + 2 * width,
-#                               pango.PIXELS(metrics.get_ascent() +
-#    metrics.get_descent()))
     tab_label.set_size_request(16 * pango.PIXELS(char_width) + 2 * width,
                                pango.PIXELS(metrics.get_ascent() +
     metrics.get_descent()) +2)
@@ -311,7 +246,9 @@ class TabView (gtk.Notebook):
                                      (gobject.TYPE_OBJECT, gobject.TYPE_STRING,)),
         "new-window-requested": (gobject.SIGNAL_RUN_FIRST,
                                      gobject.TYPE_NONE,
-                                     (gobject.TYPE_OBJECT,))
+                                     (gobject.TYPE_OBJECT,)),
+        "go-home-requested": (gobject.SIGNAL_RUN_FIRST,
+                              gobject.TYPE_NONE, ()),
         }
 
     def __init__ (self):
@@ -352,7 +289,6 @@ class TabView (gtk.Notebook):
         web_view.connect("load-finished", self._view_load_finished_cb)
         web_view.connect("create-web-view", self._new_web_view_request_cb)
         web_view.connect("title-changed", self._title_changed_cb)
-#        inspector = Inspector(web_view.get_web_inspector())
         web_view.connect("load-progress-changed", self._notify_progress_cb)
 
         scrolled_window = gtk.ScrolledWindow()
@@ -390,20 +326,32 @@ class TabView (gtk.Notebook):
     def _populate_page_popup_cb(self, view, menu):
         # misc
         if self._hovered_uri:
+            #These are BB-menu over Linked Items
             open_in_new_tab = gtk.MenuItem(_("Open Link in New Tab"))
             open_in_new_tab.connect("activate", self._open_in_new_tab, view)
             menu.insert(open_in_new_tab, 0)
-            #######the wget hack######
+
             wgetit = gtk.MenuItem("wget it")
             menu.insert(wgetit, 0)
             wgetit.connect('activate', _wget_it, self._hovered_uri)
+
             markL = gtk.MenuItem("Bookmark Link")
             menu.insert(markL, 0)
             markL.connect('activate', _bookmark_link_cb, self._hovered_uri)
         else:
+            #These are BB-menu over non-links
+            homeReq = gtk.MenuItem("Go Home")
+            menu.insert(homeReq, 0)
+            homeReq.connect('activate', self._go_home_cb)
+
+            newTab = gtk.MenuItem("Open New tab")
+            menu.insert(newTab, 0)
+            newTab.connect('activate', self._open_in_new_tab, DEFAULT_PAGE)
+
             markC = gtk.MenuItem("Bookmark Current")
             menu.insert(markC, 0)
             markC.connect('activate', _bookmark_current_cb, view)
+
             wgetit = gtk.MenuItem("wget it")
             wgetit.connect('activate', _wget_it, self._hovered_uri)
             menu.insert(wgetit, 0)
@@ -414,6 +362,10 @@ class TabView (gtk.Notebook):
             translate = gtk.MenuItem("Translate")
             menu.insert(translate, 0)
             translate.connect('activate', _trans_request_cb, view)
+
+    def _go_home_cb(self, text):
+        self.emit("go-home-requested")
+        print "Trying to go home"
 
     def _open_in_new_tab (self, menuitem, view):
         self.new_tab(self._hovered_uri)
@@ -493,12 +445,10 @@ class WebBrowser(gtk.Window):
         toolbar.connect("go-forward-requested", go_forward_requested_cb, tab_content)
         toolbar.connect("zoom-in-requested", zoom_in_requested_cb, tab_content)
         toolbar.connect("zoom-out-requested", zoom_out_requested_cb, tab_content)
-        toolbar.connect("go-home-requested", load_requested_cb, HOME_PAGE, tab_content)
+        tab_content.connect("go-home-requested", load_requested_cb, HOME_PAGE, tab_content)
         toolbar.connect("google-requested", load_requested_cb, SEARCH_PAGE, tab_content)
         toolbar.connect("load-requested", load_requested_cb, tab_content)
         toolbar.connect("new-tab-requested", new_tab_requested_cb, tab_content)
-       # toolbar.connect("view-source-mode-requested", view_source_mode_requested_cb, tab_content)
-       # toolbar.connect("info-dialog-requested", info_dialog_cb, tab_content)
 
         self.pbar = gtk.ProgressBar()
         self.pbar.set_size_request(0, 18)
@@ -595,8 +545,12 @@ def load_committed_cb (tab_content, frame, toolbar):
     if not uri:
         uri = "http://"
     toolbar.location_set_text(uri)
-    toolbar.BackBtn.set_sensitive(cview.can_go_back())
-    toolbar.FwdBtn.set_sensitive(cview.can_go_forward())
+#
+#  This is the "sensitive" to check if back/forward works.
+#  Fix it for  BB layout.
+#
+    #toolbar.BackBtn.set_sensitive(cview.can_go_back())
+    #toolbar.FwdBtn.set_sensitive(cview.can_go_forward())
 
 # PCLOS Utility Function #
 def current_view(tab_content):
@@ -726,10 +680,6 @@ def destroy_cb(window, tab_content):
     window.destroy()
     gtk.main_quit()
 
-
-# context menu item callbacks
-def about_pywebkitgtk_cb(menu_item, web_view):
-    web_view.open("http://www.pclinuxos.com/forum/index.php/topic,89031.0.html")
 
 def zoom_in_cb(menu_item, web_view):
     """Zoom into the page"""
