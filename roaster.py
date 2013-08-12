@@ -115,7 +115,7 @@ class BBToolbar(gtk.Toolbar):
         self.emit("load-requested", self._entry.props.text)
 
     def _go_back_cb(self, button):
-		self.emit("go-back-requested")
+        self.emit("go-back-requested")
 
     def _go_forward_cb(self, button):
         self.emit("go-forward-requested")
