@@ -99,12 +99,6 @@ class BBToolbar(gtk.Toolbar):
         gtk.Toolbar.__init__(self)
 
         if toolbar_enabled:
-            # add search button
-            #self.GoogleBtn = gtk.ToolButton(gtk.STOCK_FIND)
-            #self.GoogleBtn.connect("clicked", self._google_cb)
-            #self.GoogleBtn.set_tooltip_text("Search page")
-            #self.insert(self.GoogleBtn, -1)
-            #self.GoogleBtn.show()
 
             if location_enabled:
                 # location entry
@@ -116,7 +110,6 @@ class BBToolbar(gtk.Toolbar):
                 self._entry.show()
                 self.insert(entry_item, -1)
                 entry_item.show()
-
 
     def _refresh_cb(self, button):
         self.emit("load-requested", self._entry.props.text)
@@ -434,11 +427,11 @@ class WebBrowser(gtk.Window):
         toolbar = BBToolbar()
         tab_content = TabView()
 
+        self.connect("key-press-event", self._catch_keypress)
         tab_content.connect("new-window-requested", self._new_window_requested_cb)
         tab_content.connect("progress-changed", self._update_progress_cb)
         tab_content.connect("hover-changed", self._update_hover_cb)
         tab_content.connect("focus-view-title-changed", self._title_changed_cb, toolbar)
-
 
         toolbar.connect("refresh-requested", load_requested_cb, tab_content)
         toolbar.connect("go-back-requested", go_back_requested_cb, tab_content)
@@ -452,6 +445,8 @@ class WebBrowser(gtk.Window):
 
         self.pbar = gtk.ProgressBar()
         self.pbar.set_size_request(0, 18)
+        
+        label = gtk.Label()
 
         vbox = gtk.VBox(spacing=1)
         vbox.pack_start(toolbar, expand=False, fill=False)
@@ -465,11 +460,33 @@ class WebBrowser(gtk.Window):
         self.show_all()
 
         tab_content.new_tab(is_url_file(DEFAULT_PAGE))
-
+#################################################
+    def _catch_keypress(self, event, label):
+        tab_content = TabView()
+        keyval = label.keyval
+        name = gtk.gdk.keyval_name(keyval)
+        mod = gtk.accelerator_get_label(keyval, label.state)
+        print str(mod)
+        if str(Config.get("default","go_back")) == str(mod):
+            print "BACK_Requested"
+        if str(Config.get("default", "go_fwd")) == str(mod):
+            print "Forward Requested."
+        if str(Config.get("default", "go_new_tab")) == str(mod):
+            print "New Tab Requested"
+        if str(Config.get("default", "go_home")) == str(mod):
+            print "Wish I could go home now."
+        if str(Config.get("default", "zoom_in")) == str(mod):
+            print "Zooming In Captain."
+        if str(Config.get("default", "zoom_out")) == str(mod):
+            print "Zooming out Captain."
+        if str(Config.get("default", "exit_k")) == str(mod):
+            print "If only EXIT was tied to something"
+        if str(Config.get("default", "reload")) == str(mod):
+            print "Oh, I would reload if you'd finish me."
+#################################################
     def _old_window_requested_cb (self, tab_content, view):
         window = view.get_toplevel()
         features = view.get_window_features()
-
 
         scrolled_window = view.get_parent()
         if features.get_property("scrollbar-visible"):
@@ -545,12 +562,6 @@ def load_committed_cb (tab_content, frame, toolbar):
     if not uri:
         uri = "http://"
     toolbar.location_set_text(uri)
-#
-#  This is the "sensitive" to check if back/forward works.
-#  Fix it for  BB layout.
-#
-    #toolbar.BackBtn.set_sensitive(cview.can_go_back())
-    #toolbar.FwdBtn.set_sensitive(cview.can_go_forward())
 
 # PCLOS Utility Function #
 def current_view(tab_content):
