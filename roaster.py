@@ -115,7 +115,7 @@ class BBToolbar(gtk.Toolbar):
         self.emit("load-requested", self._entry.props.text)
 
     def _go_back_cb(self, button):
-        self.emit("go-back-requested")
+		self.emit("go-back-requested")
 
     def _go_forward_cb(self, button):
         self.emit("go-forward-requested")
@@ -148,7 +148,7 @@ class WebKitView(webkit.WebView):
         settings.set_property("minimum-font-size", MIN_FONT_SIZE)
         self.set_zoom_level(DEFAULT_ZOOM)
 
-      # scale other content besides from text as well
+		# scale other content besides from text as well
         self.set_full_content_zoom(True)
 
         # make sure the items will be added in the end
@@ -358,7 +358,6 @@ class TabView (gtk.Notebook):
 
     def _go_home_cb(self, text):
         self.emit("go-home-requested")
-        print "Trying to go home"
 
     def _open_in_new_tab (self, menuitem, view):
         self.new_tab(self._hovered_uri)
