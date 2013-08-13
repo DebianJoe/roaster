@@ -420,6 +420,26 @@ class TabView (gtk.Notebook):
 
 
 class WebBrowser(gtk.Window):
+    __gsignals__ = {
+        "refresh-requested": (gobject.SIGNAL_RUN_FIRST,
+                              gobject.TYPE_NONE, ()),
+        "go-back-requested": (gobject.SIGNAL_RUN_FIRST,
+                              gobject.TYPE_NONE, ()),
+        "go-forward-requested": (gobject.SIGNAL_RUN_FIRST,
+                              gobject.TYPE_NONE, ()),
+        "zoom-in-requested": (gobject.SIGNAL_RUN_FIRST,
+                              gobject.TYPE_NONE, ()),
+        "zoom-out-requested": (gobject.SIGNAL_RUN_FIRST,
+                              gobject.TYPE_NONE, ()),
+        "go-home-requested": (gobject.SIGNAL_RUN_FIRST,
+                              gobject.TYPE_NONE, ()),
+        "google-requested": (gobject.SIGNAL_RUN_FIRST,
+                              gobject.TYPE_NONE, ()),
+        "new-tab-requested": (gobject.SIGNAL_RUN_FIRST,
+                                  gobject.TYPE_NONE, ()),
+        "go-home-requested": (gobject.SIGNAL_RUN_FIRST,
+                              gobject.TYPE_NONE, ()),
+        }
 
     def __init__(self):
         gtk.Window.__init__(self)
@@ -427,17 +447,22 @@ class WebBrowser(gtk.Window):
         tab_content = TabView()
 
         self.connect("key-press-event", self._catch_keypress)
+        self.connect("go-back-requested", go_back_requested_cb, tab_content)
+        self.connect("go-forward-requested", go_forward_requested_cb, tab_content)
+        self.connect("new-tab-requested", new_tab_requested_cb, tab_content)
+        self.connect("go-home-requested", load_requested_cb, HOME_PAGE, tab_content)
+        self.connect("zoom-in-requested", zoom_in_requested_cb, tab_content)
+        self.connect("zoom-out-requested", zoom_out_requested_cb, tab_content)
         tab_content.connect("new-window-requested", self._new_window_requested_cb)
         tab_content.connect("progress-changed", self._update_progress_cb)
         tab_content.connect("hover-changed", self._update_hover_cb)
         tab_content.connect("focus-view-title-changed", self._title_changed_cb, toolbar)
-
+        tab_content.connect("go-home-requested", load_requested_cb, HOME_PAGE, tab_content)
         toolbar.connect("refresh-requested", load_requested_cb, tab_content)
         toolbar.connect("go-back-requested", go_back_requested_cb, tab_content)
         toolbar.connect("go-forward-requested", go_forward_requested_cb, tab_content)
         toolbar.connect("zoom-in-requested", zoom_in_requested_cb, tab_content)
         toolbar.connect("zoom-out-requested", zoom_out_requested_cb, tab_content)
-        tab_content.connect("go-home-requested", load_requested_cb, HOME_PAGE, tab_content)
         toolbar.connect("google-requested", load_requested_cb, SEARCH_PAGE, tab_content)
         toolbar.connect("load-requested", load_requested_cb, tab_content)
         toolbar.connect("new-tab-requested", new_tab_requested_cb, tab_content)
@@ -459,30 +484,50 @@ class WebBrowser(gtk.Window):
         self.show_all()
 
         tab_content.new_tab(is_url_file(DEFAULT_PAGE))
-#################################################
+
     def _catch_keypress(self, event, label):
         tab_content = TabView()
         keyval = label.keyval
         name = gtk.gdk.keyval_name(keyval)
         mod = gtk.accelerator_get_label(keyval, label.state)
-        print str(mod)
         if str(Config.get("default","go_back")) == str(mod):
-            print "BACK_Requested"
+            self._go_back_key()
         if str(Config.get("default", "go_fwd")) == str(mod):
-            print "Forward Requested."
+            self._go_fwd_key()
         if str(Config.get("default", "go_new_tab")) == str(mod):
-            print "New Tab Requested"
+            self._go_new_tab_key()
         if str(Config.get("default", "go_home")) == str(mod):
-            print "Wish I could go home now."
+            self._go_home_key()
         if str(Config.get("default", "zoom_in")) == str(mod):
-            print "Zooming In Captain."
+            self._zoom_in_key()
         if str(Config.get("default", "zoom_out")) == str(mod):
-            print "Zooming out Captain."
+            self._zoom_out_key()
         if str(Config.get("default", "exit_k")) == str(mod):
-            print "If only EXIT was tied to something"
+            self._exit_k()
         if str(Config.get("default", "reload")) == str(mod):
-            print "Oh, I would reload if you'd finish me."
-#################################################
+            self._load_key()
+
+    def _go_back_key(self):
+        self.emit("go-back-requested")
+
+    def _go_fwd_key(self):
+        self.emit("go-forward-requested")
+
+    def _go_new_tab_key(self):
+        self.emit("new-tab-requested")
+
+    def _go_home_key(self):
+        self.emit("go-home-requested")
+
+    def _zoom_in_key(self):
+        self.emit("zoom-in-requested")
+
+    def _zoom_out_key(self):
+        self.emit("zoom-out-requested")
+
+    def _exit_k(self):
+        sys.exit()
+
     def _old_window_requested_cb (self, tab_content, view):
         window = view.get_toplevel()
         features = view.get_window_features()
