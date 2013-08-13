@@ -40,8 +40,14 @@ Faq
 *Q. How do I get it to run? 
 *A. It is set to run by default in many LinuxBBQ distributions.  <http://www.linuxbbq.org>  If you'd like to run it as a script, then satisfy all of the imports, cd to the directory that the script is located, and run that bad mama-jama.
 
-*Q. I see no buttons, how do I get around?
-*A. Right click.  When in doubt...right click.  It's designed to use gtk menus like BlackBox or OpenBox (or whatever_box).  All functionality is based on easy to navigate with right-click menus.  In the near future, there will be key-binds offered to allow the users who prefer to not use a mouse the same level of control.  This feature is yet to be implemented.
+*Q. I see no buttons, how do I get around?  
+*A. Right click.  When in doubt...right click.  It's designed to use gtk menus like BlackBox or OpenBox (or whatever_box).  All functionality is based on easy to navigate with right-click menus.
+
+*Q. I don't use a mouse, mice are for noobs!  
+*A. In the .roaster.conf file, there are user configurable shortcut keys.  If you don't use a mouse, then I'm sure you already are using a ton of hotkeys.  I'd hate to get in the way of that...so I give you full freedom to bind them however suits you.
+
+*Q. How do I set the keybinds?  
+*A. In the config file, there are detailed instructions.  If you screw up the syntax, though, they won't work.  So, don't screw it up.
 
 *Q. How do I run it on Windows/Macintosh systems? 
 *A. On the 13th of the month, at midnight, make 2 circles of salted leather strips.  Sacrifice a virgin, and draw a pentagram on the floor with her blood.  Then, repeat these lines, "Oh Overlord Satan, I beg of thee...make roaster run under Windows/Macintosh."  Report back with your findings.  Add "your soul" to the list of things to import.  I've not tried it, but it works in theory.
