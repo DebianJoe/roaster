@@ -1,5 +1,8 @@
 #!/usr/bin/env python
 #
+# Copyright (C) 2013 Julius Hader <bacon@linuxbbq.org>
+# and/or Joe Brock <DebianJoe@linuxbbq.org>
+# Forked from a PCLinuxOS Community Project
 # Copyright (C) 2007, 2008, 2009 Jan Michael Alonzo <jmalonzo@gmai.com>
 #
 # This program is free software; you can redistribute it and/or modify
@@ -342,10 +345,12 @@ class TabView (gtk.Notebook):
 
             markC = gtk.MenuItem("Bookmark Current")
             menu.insert(markC, 0)
-            markC.connect('activate', _bookmark_current_cb, view)
+            markC.connect('activate', _bookmark_current_cb, 
+                          view.get_main_frame().get_uri())
 
             wgetit = gtk.MenuItem("wget it")
-            wgetit.connect('activate', _wget_it, self._hovered_uri)
+            wgetit.connect('activate', _wget_it, 
+                           view.get_main_frame().get_uri())
             menu.insert(wgetit, 0)
             menu.show_all()
 
@@ -623,12 +628,14 @@ def is_url_file(text):
         text = "http" + text
     return text
 
-# PCLOS Context Menu Callbacks #
-def _bookmark_current_cb(widget, view):
+# Linux BBQ functional Callbacks #
+def _bookmark_current_cb(widget, uri):
     print "bookmark current \n"
+    print uri
 
 def _bookmark_link_cb(widget, url):
     print "bookmark link \n"
+    print url
 
 def _wget_it(widget, url):
     global Config
