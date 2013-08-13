@@ -21,7 +21,6 @@
 # * fix tab relabelling
 # * search page interface
 # * custom button - w/o margins/padding to make tabs thin
-# * 
 
 from gettext import gettext as _
 
@@ -148,7 +147,7 @@ class WebKitView(webkit.WebView):
         settings.set_property("minimum-font-size", MIN_FONT_SIZE)
         self.set_zoom_level(DEFAULT_ZOOM)
 
-		# scale other content besides from text as well
+        # scale other content besides from text as well
         self.set_full_content_zoom(True)
 
         # make sure the items will be added in the end
@@ -504,8 +503,6 @@ class WebBrowser(gtk.Window):
             self._zoom_out_key()
         if str(Config.get("default", "exit_k")) == str(mod):
             self._exit_k()
-        if str(Config.get("default", "reload")) == str(mod):
-            self._load_key()
 
     def _go_back_key(self):
         self.emit("go-back-requested")
@@ -746,13 +743,7 @@ def zoom_out_cb(menu_item, web_view):
 
 def exit_roast(menu_item):
     """exit roaster"""
-    print "Exit the Roasting."
     sys.exit()
-
-def zoom_hundred_cb(menu_item, web_view):
-    """Zoom 100%"""
-    if not (web_view.get_zoom_level() == 1.0):
-        web_view.set_zoom_level(1.0)
 
 def print_cb(menu_item, web_view):
     mainframe = web_view.get_main_frame()
