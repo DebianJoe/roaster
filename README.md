@@ -49,7 +49,7 @@ Faq
 *Q. How do I set the keybinds?  
 *A. In the config file, there are detailed instructions.  If you screw up the syntax, though, they won't work.  So, don't screw it up.
 
-*Q. How do I run it on Windows/Macintosh systems? 
+*Q. How do I run it on Windows/Macintosh systems?   
 *A. On the 13th of the month, at midnight, make 2 circles of salted leather strips.  Sacrifice a virgin, and draw a pentagram on the floor with her blood.  Then, repeat these lines, "Oh Overlord Satan, I beg of thee...make roaster run under Windows/Macintosh."  Report back with your findings.  Add "your soul" to the list of things to import.  I've not tried it, but it works in theory.
 
 *Q. Will you please _______?   
