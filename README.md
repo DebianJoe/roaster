@@ -24,6 +24,10 @@ Config Info
 
 Roaster is designed to read configuration files from one of 2 locations.  It will first source "/etc/roaster.conf", and then subsequently "~/.roaster.conf".  Should you wish to make changes to the Homepage, Default Page, or where files are stored using the "wget-it" option, this file is where you'll want to start hacking.  Before you even ask, I like config files because they're light on resource usage, so don't start requesting gtk-buttons and other such "user-friendly" options for changing these items.  There is an included .roaster.conf file in the tar, so you should be able to simply "cp /foo_bar_dir/.roaster.conf ~/.roaster.conf" and then start making it do what you want.
 
+Design Concept
+=======
+Roaster was created with a few goals in mind, and all changes are expected to abide by the [url=linuxbbq.org/wiki/index.php?title=BBQ_Philosophy]LinuxBBQ Philosophy[/url].  As nice as extra features are, they are only implemented if they add to the user's experience without significantly impacting performance.  The entire project is purposely designed to be contained in a simple script.  There is already one Firefox, so there's not much point in trying to recreate their entire project.  We hope to provide something simple, and distinct.
+
 Faq
 =======
 *Q. What is this?  
