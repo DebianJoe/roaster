@@ -33,6 +33,8 @@ Faq
 *Q. My config file doesn't work/some buttons don't work/foobar_function is broken.   
 *A. Say it with me, "Development Branch"...we're working on it.  If you would like to submit an issue, then feel free.  We'll look into it.
 
+*Q. What's up with the Bookmark file thing?  It's not there.  
+*A. The design is set up to integrate with links2.  The theory is that they share the same file for bookmarks, and so what is done in one will be reflected in the other.  If you don't have links2 installed, then simple create a <~/.links2/bookmarks.html> file for roaster to read/write to.  
 
 *Q. I'd like to add (_______) feature.   
 *A. Then by all means, add it.  If you want it in the main line program, put in a pull request.
