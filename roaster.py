@@ -22,8 +22,7 @@
 # TODO:
 #
 # * fix tab relabelling
-# * search page interface
-# * custom button - w/o margins/padding to make tabs thin
+# * bookmark integration w/ links2
 
 from gettext import gettext as _
 
