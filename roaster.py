@@ -36,25 +36,6 @@ import urllib
 import simplejson
 import ConfigParser
 
-
-ABOUT_PAGE = """
-<html><head><title>PyWebKitGtk - About</title></head><body>
-<h1>Welcome to <code>webbrowser.py</code></h1>
-<p><a
-href="http://code.google.com/p/pywebkitgtk/">http://code.google.com/p/pywebkitgtk/</a><br/>
-</p>
-</body></html>
-"""
-
-INFO_PAGE = """
-<html><head><title>Roaster - About</title></head><body>
-<h1>Welcome to <code>Roaster</code></h1>
-<p><a href=http://www.pclinuxos.com/forum/index.php/topic,89031.0.html>A PCLinuxOS community project</a><br/>
-</p>
-<p>modified by Julius Hader <bacon@linuxbbq.org> for LinuxBBQ</p>
-<p>further modified and FUBAR by Joe Brock <DebianJoe@linuxbbq.org></p>
-</body></html>
-"""
 #Set Up config reading for global options
 
 Config = ConfigParser.ConfigParser()
@@ -64,7 +45,7 @@ Config.read(os.path.expanduser('~/.roaster.conf'))
 # DEFAULT_PAGE can be overridden at the command line
 DEFAULT_PAGE = Config.get("default", "d_page")
 HOME_PAGE = Config.get("homepage", "homepage")
-BOOKMARK_PAGE = ".links2/bookmarks.html"
+BOOKMARK_PAGE = os.path.expanduser("~/") + ".links2/bookmarks.html"
 SEARCH_PAGE = "http://www.google.com/"
 MIN_FONT_SIZE = float(Config.get("default", "min_font_size"))
 DEFAULT_ZOOM = float(Config.get("default", "zoom"))
@@ -92,8 +73,6 @@ class BBToolbar(gtk.Toolbar):
                                (gobject.TYPE_STRING,)),
         "new-tab-requested": (gobject.SIGNAL_RUN_FIRST,
                                   gobject.TYPE_NONE, ()),
-        "info-dialog-requested": (gobject.SIGNAL_RUN_FIRST,
-                                      gobject.TYPE_NONE, ()),
         }
 
 
@@ -336,7 +315,6 @@ class TabView (gtk.Notebook):
             markL.connect('activate', _bookmark_link_cb, self._hovered_uri)
         else:
             #These are BB-menu over non-links
-
             bmReq = gtk.MenuItem("See Bookmarks")
             menu.insert(bmReq, 0)
             bmReq.connect('activate', self._go_bm_cb)
@@ -436,8 +414,6 @@ class WebBrowser(gtk.Window):
     __gsignals__ = {
         "refresh-requested": (gobject.SIGNAL_RUN_FIRST,
                               gobject.TYPE_NONE, ()),
-        "go-bm-requested": (gobject.SIGNAL_RUN_FIRST,
-                              gobject.TYPE_NONE, ()),
         "go-back-requested": (gobject.SIGNAL_RUN_FIRST,
                               gobject.TYPE_NONE, ()),
         "go-forward-requested": (gobject.SIGNAL_RUN_FIRST,
@@ -454,6 +430,8 @@ class WebBrowser(gtk.Window):
                                   gobject.TYPE_NONE, ()),
         "go-home-requested": (gobject.SIGNAL_RUN_FIRST,
                               gobject.TYPE_NONE, ()),
+        "go-bm-requested": (gobject.SIGNAL_RUN_FIRST,
+                              gobject.TYPE_NONE, ()),
         }
 
     def __init__(self):
@@ -466,14 +444,14 @@ class WebBrowser(gtk.Window):
         self.connect("go-forward-requested", go_forward_requested_cb, tab_content)
         self.connect("new-tab-requested", new_tab_requested_cb, tab_content)
         self.connect("go-home-requested", load_requested_cb, HOME_PAGE, tab_content)
-        self.connect("go-bm-requested", load_bookmarks_cb, BOOKMARK_PAGE, tab_content)
+        self.connect("go-bm-requested", load_requested_cb, BOOKMARK_PAGE, tab_content)
         self.connect("zoom-in-requested", zoom_in_requested_cb, tab_content)
         self.connect("zoom-out-requested", zoom_out_requested_cb, tab_content)
         tab_content.connect("new-window-requested", self._new_window_requested_cb)
         tab_content.connect("progress-changed", self._update_progress_cb)
         tab_content.connect("hover-changed", self._update_hover_cb)
         tab_content.connect("focus-view-title-changed", self._title_changed_cb, toolbar)
-        tab_content.connect("go-bm-requested", load_bookmarks_cb, BOOKMARK_PAGE, tab_content)
+        tab_content.connect("go-bm-requested", load_requested_cb, BOOKMARK_PAGE, tab_content)
         tab_content.connect("go-home-requested", load_requested_cb, HOME_PAGE, tab_content)
         toolbar.connect("refresh-requested", load_requested_cb, tab_content)
         toolbar.connect("go-back-requested", go_back_requested_cb, tab_content)
@@ -488,7 +466,6 @@ class WebBrowser(gtk.Window):
         self.pbar.set_size_request(0, 18)
         
         label = gtk.Label()
-
         vbox = gtk.VBox(spacing=1)
         vbox.pack_start(toolbar, expand=False, fill=False)
         vbox.pack_start(tab_content)
@@ -497,12 +474,12 @@ class WebBrowser(gtk.Window):
         self.add(vbox)
         self.set_default_size(800, 600)
         self.connect('destroy', destroy_cb, tab_content)
-
         self.show_all()
 
         tab_content.new_tab(is_url_file(DEFAULT_PAGE))
 
     def _catch_keypress(self, event, label):
+        # Capture Hotkeys #
         tab_content = TabView()
         keyval = label.keyval
         name = gtk.gdk.keyval_name(keyval)
@@ -521,32 +498,31 @@ class WebBrowser(gtk.Window):
             self._zoom_out_key()
         if str(Config.get("default", "exit_k")) == str(mod):
             self._exit_k()
+        if str(Config.get("default", "bookmarks")) == str(mod):
+            self._go_bookmarks_key()
+            print "keys for Bookmark page pressed"
 
+    # Hotkey Handlers #
     def _go_back_key(self):
         self.emit("go-back-requested")
-
     def _go_fwd_key(self):
         self.emit("go-forward-requested")
-
     def _go_new_tab_key(self):
         self.emit("new-tab-requested")
-
     def _go_home_key(self):
         self.emit("go-home-requested")
-
     def _zoom_in_key(self):
         self.emit("zoom-in-requested")
-
     def _zoom_out_key(self):
         self.emit("zoom-out-requested")
-
     def _exit_k(self):
         sys.exit()
+    def _go_bookmarks_key(self):
+        self.emit("go-bm-requested")
 
     def _old_window_requested_cb (self, tab_content, view):
         window = view.get_toplevel()
         features = view.get_window_features()
-
         scrolled_window = view.get_parent()
         if features.get_property("scrollbar-visible"):
             scrolled_window.props.hscrollbar_policy = gtk.POLICY_NEVER
@@ -609,15 +585,6 @@ def new_tab_requested_cb (toolbar, tab_content):
     tab_content.new_tab(None)
     toolbar.location_set_text(text)
 
-
-#######################this attempts to load html file in ~/.links2/bookmarks.html
-def load_bookmarks_cb (widget, text, tab_content):
-    if text:
-        text = os.path.expanduser("~/") + text
-        tab_content.load_uri(text)
-        print "Trying to load html"
-    return
-
 def load_requested_cb (widget, text, tab_content):
     if text:
         url = is_url_file(text)
@@ -670,20 +637,7 @@ def _wget_it(widget, url):
     else:
         print "You cannot wget that."
 
-def info_dialog_cb(self, widget):
-    url = "http://www.linuxbbq.org"
-    about = gtk.AboutDialog()
-    about.set_program_name("Roaster")
-    about.set_version("0.0.1")
-    about.set_copyright("(c) original code written by Jan Michael Alonzo")
-    about.set_comments("modified and fubar by Julius Hader for LinuxBBQ")
-    about.set_website(url)
-    about.set_logo(None)
-    about.run()
-    about.destroy()
-
 def _trans_request_cb(self, view):
-
     view.get_window().set_cursor(gtk.gdk.Cursor(gtk.gdk.WATCH))
     clipboard = gtk.Clipboard()
     view.copy_clipboard()
@@ -693,7 +647,6 @@ def _trans_request_cb(self, view):
 def clipboard_text_received(clipboard, text, data):
     # send google some text and they return it translated.
     url = "http://ajax.googleapis.com/ajax/services/language/translate"
-
     source = ""
     dest = "en" # edit LANGUAGE to suit
     params = {}
@@ -706,7 +659,6 @@ def clipboard_text_received(clipboard, text, data):
     trans_dlg(translation)
 
 def trans_dlg(translation):
-
     tmp_file = "/tmp/xxx.html"
     preprefx = """<pre style="
     white-space: -moz-pre-wrap;
@@ -760,7 +712,6 @@ def destroy_cb(window, tab_content):
         num_pages = num_pages - 1
     window.destroy()
     gtk.main_quit()
-
 
 def zoom_in_cb(menu_item, web_view):
     """Zoom into the page"""
