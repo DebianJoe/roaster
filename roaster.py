@@ -64,6 +64,7 @@ Config.read(os.path.expanduser('~/.roaster.conf'))
 # DEFAULT_PAGE can be overridden at the command line
 DEFAULT_PAGE = Config.get("default", "d_page")
 HOME_PAGE = Config.get("homepage", "homepage")
+BOOKMARK_PAGE = ".links2/bookmarks.html"
 SEARCH_PAGE = "http://www.google.com/"
 MIN_FONT_SIZE = float(Config.get("default", "min_font_size"))
 DEFAULT_ZOOM = float(Config.get("default", "zoom"))
@@ -235,6 +236,8 @@ class TabView (gtk.Notebook):
         "progress-changed": (gobject.SIGNAL_RUN_FIRST,
                                      gobject.TYPE_NONE,
                                      (gobject.TYPE_OBJECT, gobject.TYPE_STRING,)),
+        "go-bm-requested": (gobject.SIGNAL_RUN_FIRST,
+                              gobject.TYPE_NONE, ()),
         "hover-changed": (gobject.SIGNAL_RUN_FIRST,
                                      gobject.TYPE_NONE,
                                      (gobject.TYPE_OBJECT, gobject.TYPE_STRING,)),
@@ -284,7 +287,6 @@ class TabView (gtk.Notebook):
         web_view.connect("create-web-view", self._new_web_view_request_cb)
         web_view.connect("title-changed", self._title_changed_cb)
         web_view.connect("load-progress-changed", self._notify_progress_cb)
-
         scrolled_window = gtk.ScrolledWindow()
         scrolled_window.props.hscrollbar_policy = gtk.POLICY_AUTOMATIC
         scrolled_window.props.vscrollbar_policy = gtk.POLICY_AUTOMATIC
@@ -334,6 +336,11 @@ class TabView (gtk.Notebook):
             markL.connect('activate', _bookmark_link_cb, self._hovered_uri)
         else:
             #These are BB-menu over non-links
+
+            bmReq = gtk.MenuItem("See Bookmarks")
+            menu.insert(bmReq, 0)
+            bmReq.connect('activate', self._go_bm_cb)
+
             homeReq = gtk.MenuItem("Go Home")
             menu.insert(homeReq, 0)
             homeReq.connect('activate', self._go_home_cb)
@@ -358,6 +365,9 @@ class TabView (gtk.Notebook):
             translate = gtk.MenuItem("Translate")
             menu.insert(translate, 0)
             translate.connect('activate', _trans_request_cb, view)
+
+    def _go_bm_cb(self, text):
+        self.emit("go-bm-requested")
 
     def _go_home_cb(self, text):
         self.emit("go-home-requested")
@@ -426,6 +436,8 @@ class WebBrowser(gtk.Window):
     __gsignals__ = {
         "refresh-requested": (gobject.SIGNAL_RUN_FIRST,
                               gobject.TYPE_NONE, ()),
+        "go-bm-requested": (gobject.SIGNAL_RUN_FIRST,
+                              gobject.TYPE_NONE, ()),
         "go-back-requested": (gobject.SIGNAL_RUN_FIRST,
                               gobject.TYPE_NONE, ()),
         "go-forward-requested": (gobject.SIGNAL_RUN_FIRST,
@@ -454,12 +466,14 @@ class WebBrowser(gtk.Window):
         self.connect("go-forward-requested", go_forward_requested_cb, tab_content)
         self.connect("new-tab-requested", new_tab_requested_cb, tab_content)
         self.connect("go-home-requested", load_requested_cb, HOME_PAGE, tab_content)
+        self.connect("go-bm-requested", load_bookmarks_cb, BOOKMARK_PAGE, tab_content)
         self.connect("zoom-in-requested", zoom_in_requested_cb, tab_content)
         self.connect("zoom-out-requested", zoom_out_requested_cb, tab_content)
         tab_content.connect("new-window-requested", self._new_window_requested_cb)
         tab_content.connect("progress-changed", self._update_progress_cb)
         tab_content.connect("hover-changed", self._update_hover_cb)
         tab_content.connect("focus-view-title-changed", self._title_changed_cb, toolbar)
+        tab_content.connect("go-bm-requested", load_bookmarks_cb, BOOKMARK_PAGE, tab_content)
         tab_content.connect("go-home-requested", load_requested_cb, HOME_PAGE, tab_content)
         toolbar.connect("refresh-requested", load_requested_cb, tab_content)
         toolbar.connect("go-back-requested", go_back_requested_cb, tab_content)
@@ -594,6 +608,15 @@ def new_tab_requested_cb (toolbar, tab_content):
     text = ""
     tab_content.new_tab(None)
     toolbar.location_set_text(text)
+
+
+#######################this attempts to load html file in ~/.links2/bookmarks.html
+def load_bookmarks_cb (widget, text, tab_content):
+    if text:
+        text = os.path.expanduser("~/") + text
+        tab_content.load_uri(text)
+        print "Trying to load html"
+    return
 
 def load_requested_cb (widget, text, tab_content):
     if text:
