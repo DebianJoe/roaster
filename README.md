@@ -26,7 +26,7 @@ Roaster is designed to read configuration files from one of 2 locations.  It wil
 
 Design Concept
 =======
-Roaster was created with a few goals in mind, and all changes are expected to abide by the [url=linuxbbq.org/wiki/index.php?title=BBQ_Philosophy]LinuxBBQ Philosophy[/url].  As nice as extra features are, they are only implemented if they add to the user's experience without significantly impacting performance.  The entire project is purposely designed to be contained in a simple script.  There is already one Firefox, so there's not much point in trying to recreate their entire project.  We hope to provide something simple, and distinct.
+Roaster was created with a few goals in mind, and all changes are expected to abide by the LinuxBBQ Philosophy.  As nice as extra features are, they are only implemented if they add to the user's experience without significantly impacting performance.  The entire project is purposely designed to be contained in a simple script.  There is already one Firefox, so there's not much point in trying to recreate their entire project.  We hope to provide something simple, and distinct.
 
 Faq
 =======
