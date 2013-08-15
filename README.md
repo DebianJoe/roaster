@@ -5,9 +5,9 @@ The Development branch for the Roaster web-browser for LinuxBBQ
 
 License
 =======
-Original code Copyright (C) 2007, 2008, 2009 Jan Michael Alonzo <jmalonzo@gmai.com>
+Copyright (c) 2013, Julius Hader <bacon@linuxbbq.org> and/or Joe Brock <DebianJoe@linuxbbq.org>
 
-All additional files Copyright (c) 2013, Julius Hader <bacon@linuxbbq.org> and/or Joe Brock <DebianJoe@linuxbbq.org>
+Forked from a PCLinuxOS project Copyright (C) 2007, 2008, 2009 Jan Michael Alonzo <jmalonzo@gmail.com>
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
