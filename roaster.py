@@ -605,8 +605,8 @@ def alter_links(target):
     data="".join(open("/home/joe/.links2/bookmarks.html").readlines()[0:-2])
     open("/home/joe/.links2/bookmarks.html","wb").write(data)
     with open("/home/joe/.links2/bookmarks.html", "a") as myfile:
-        myfile.write('\t<DT><A HREF>' + str(target) + '</A>\n' + 
-                     '</DL><P>\n</HTML>')
+        myfile.write('\t<DT><A HREF="' + str(target) + '">' + str(target)
+                     + '</A>\n' + '</DL><P>\n</HTML>')
 
 def _wget_it(widget, url):
     global Config
