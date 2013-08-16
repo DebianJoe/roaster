@@ -18,14 +18,13 @@
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
-
+#
 # TODO:
 #
 # * fix tab relabelling
 # * bookmark integration w/ links2
 
 from gettext import gettext as _
-
 import sys
 import os
 import gobject
@@ -37,12 +36,9 @@ import simplejson
 import ConfigParser
 
 #Set Up config reading for global options
-
 Config = ConfigParser.ConfigParser()
 Config.read('/etc/roaster.conf')
 Config.read(os.path.expanduser('~/.roaster.conf'))
-
-# DEFAULT_PAGE can be overridden at the command line
 DEFAULT_PAGE = Config.get("default", "d_page")
 HOME_PAGE = Config.get("homepage", "homepage")
 BOOKMARK_PAGE = os.path.expanduser("~/") + ".links2/bookmarks.html"
@@ -92,30 +88,23 @@ class BBToolbar(gtk.Toolbar):
                 self.insert(entry_item, -1)
                 entry_item.show()
 
+    # handlers for gsignals
     def _refresh_cb(self, button):
         self.emit("load-requested", self._entry.props.text)
-
     def _go_back_cb(self, button):
         self.emit("go-back-requested")
-
     def _go_forward_cb(self, button):
         self.emit("go-forward-requested")
-
     def _zoom_in_cb(self, button):
         self.emit("zoom-in-requested")
-
     def _zoom_out_cb(self, button):
         self.emit("zoom-out-requested")
-
     def _google_cb(self, text):
         self.emit("google-requested")
-
     def location_set_text (self, text):
         self._entry.set_text(text)
-
     def _entry_activate_cb(self, entry):
         self.emit("load-requested", self._entry.props.text)
-
     def _add_tab_cb(self, button):
         self.emit("new-tab-requested")
 
@@ -128,12 +117,8 @@ class WebKitView(webkit.WebView):
         settings.set_property("enable-developer-extras", True)
         settings.set_property("minimum-font-size", MIN_FONT_SIZE)
         self.set_zoom_level(DEFAULT_ZOOM)
-
-        # scale other content besides from text as well
         self.set_full_content_zoom(True)
-
         # make sure the items will be added in the end
-        # hence the reason for the connect_after
         self.connect_after("populate-popup", self.populate_popup)
         self.set_settings(settings)
 
@@ -153,7 +138,6 @@ class WebKitView(webkit.WebView):
         menu.append(roaster_exit)
 
         menu.append(gtk.SeparatorMenuItem())
-
         menu.show_all()
         return False
 
@@ -175,7 +159,6 @@ class TabLabel (gtk.HBox):
         self.label.props.max_width_chars = 30
         self.label.set_ellipsize(pango.ELLIPSIZE_MIDDLE)
         self.label.set_alignment(0.0, 0.5)
-
         icon = gtk.image_new_from_stock(gtk.STOCK_ORIENTATION_PORTRAIT, gtk.ICON_SIZE_BUTTON)
         close_image = gtk.image_new_from_stock(gtk.STOCK_CLOSE, gtk.ICON_SIZE_MENU)
         close_button = gtk.Button()
@@ -185,7 +168,6 @@ class TabLabel (gtk.HBox):
         self.pack_start(icon, False, False, 0)
         self.pack_start(self.label, True, True, 0)
         self.pack_start(close_button, False, False, 0)
-
         self.set_data("label", self.label)
         self.set_data("close-button", close_button)
         self.connect("style-set", tab_label_style_set_cb)
@@ -233,7 +215,6 @@ class TabView (gtk.Notebook):
         self.props.scrollable = True
         self.props.homogeneous = True
         self.connect("switch-page", self._switch_page)
-
         self.show_all()
         self._hovered_uri = None
 
@@ -255,7 +236,6 @@ class TabView (gtk.Notebook):
 
     def new_tab (self, url):
         """creates a new page in a new tab"""
-        # create the tab content
         browser = WebKitView()
         self._construct_tab_content(browser, url)
 
@@ -286,7 +266,6 @@ class TabView (gtk.Notebook):
 
         # hide the tab if there's only one
         self.set_show_tabs(self.get_n_pages() > 1)
-
         self.show_all()
         self.set_current_page(new_tab_number)
 
@@ -394,13 +373,10 @@ class TabView (gtk.Notebook):
         scrolled_window.props.hscrollbar_policy = gtk.POLICY_AUTOMATIC
         scrolled_window.props.vscrollbar_policy = gtk.POLICY_AUTOMATIC
         view = WebKitView()
-
         scrolled_window.add(view)
         scrolled_window.show_all()
-
         vbox = gtk.VBox(spacing=1)
         vbox.pack_start(scrolled_window, True, True)
-
         window = gtk.Window()
         window.add(vbox)
         view.connect("web-view-ready", self._new_web_view_ready_cb)
