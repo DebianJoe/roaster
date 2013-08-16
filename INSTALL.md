@@ -18,7 +18,7 @@ touch bookmarks.html
 
 Also, it is necessary to migrate the .roaster.conf file into the user's home directory, or into /etc/and save it simply as roaster.conf (without the "." in front of it).  The local user's file will take precendence over the global one.
 
-If you have questions about installing (and I use that word loosely), then feel free to shoot me an email at <DebianJoe@linuxbbq.org> or simply stop by the forums and ask for help.  There are tons of sysystems that I cannot possibly test it on myself, so the feedback would be appreciated.
+If you have questions about installing (and I use that word loosely), then feel free to shoot me an email at <DebianJoe@linuxbbq.org> or simply stop by the forums and ask for help.  There are tons of systems that I cannot possibly test it on myself, so the feedback would be appreciated.
 
 Regards,
 Joe
