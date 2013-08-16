@@ -595,12 +595,18 @@ def is_url_file(text):
 
 # Linux BBQ functional Callbacks #
 def _bookmark_current_cb(widget, uri):
-    print "bookmark current \n"
-    print uri
+    alter_links(uri)
 
 def _bookmark_link_cb(widget, url):
-    print "bookmark link \n"
-    print url
+    alter_links(url)
+
+def alter_links(target):
+    #a function to reformat the links2 bookmark file
+    data="".join(open("/home/joe/.links2/bookmarks.html").readlines()[0:-2])
+    open("/home/joe/.links2/bookmarks.html","wb").write(data)
+    with open("/home/joe/.links2/bookmarks.html", "a") as myfile:
+        myfile.write('\t<DT><A HREF>' + str(target) + '</A>\n' + 
+                     '</DL><P>\n</HTML>')
 
 def _wget_it(widget, url):
     global Config
