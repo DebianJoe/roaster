@@ -33,10 +33,6 @@ Faq
 *Q. What is this?  
 *A. Did you read the thing at the top of this document?  That's what it is.  It's the Development Branch for the LinuxBBQ's "Roaster" Web-Browser.  More accuratly, it's a Python-based browser that's lightweight and extremely hackable.
 
-
-*Q. My config file doesn't work/some buttons don't work/foobar_function is broken.   
-*A. Say it with me, "Development Branch"...we're working on it.  If you would like to submit an issue, then feel free.  We'll look into it.
-
 *Q. What's up with the Bookmark file thing?  It's not there.  
 *A. The design is set up to integrate with links2.  The theory is that they share the same file for bookmarks, and so what is done in one will be reflected in the other.  If you don't have links2 installed, then simple create a <~/.links2/bookmarks.html> file for roaster to read/write to.  
 
