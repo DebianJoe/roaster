@@ -22,7 +22,6 @@
 # TODO:
 #
 # * fix tab relabelling
-# * search page FREEDOM
 
 from gettext import gettext as _
 import sys
@@ -41,7 +40,7 @@ Config.read(os.path.expanduser('~/.roaster.conf'))
 DEFAULT_PAGE = Config.get("default", "d_page")
 HOME_PAGE = Config.get("homepage", "homepage")
 BOOKMARK_PAGE = os.path.expanduser("~/") + ".links2/bookmarks.html"
-SEARCH_PAGE = "http://www.google.com/"
+SEARCH_PAGE = Config.get("default", "s_page")
 MIN_FONT_SIZE = float(Config.get("default", "min_font_size"))
 DEFAULT_ZOOM = float(Config.get("default", "zoom"))
 LANGUAGE = "en"
@@ -206,6 +205,8 @@ class TabView (gtk.Notebook):
                                      (gobject.TYPE_OBJECT,)),
         "go-home-requested": (gobject.SIGNAL_RUN_FIRST,
                               gobject.TYPE_NONE, ()),
+        "go-search-requested": (gobject.SIGNAL_RUN_FIRST,
+                              gobject.TYPE_NONE, ()),
         }
 
     def __init__ (self):
@@ -297,6 +298,10 @@ class TabView (gtk.Notebook):
             menu.insert(bmReq, 0)
             bmReq.connect('activate', self._go_bm_cb)
 
+            searchReq = gtk.MenuItem("Web Search")
+            menu.insert(searchReq, 0)
+            searchReq.connect('activate', self._go_search_cb)
+
             homeReq = gtk.MenuItem("Go Home")
             menu.insert(homeReq, 0)
             homeReq.connect('activate', self._go_home_cb)
@@ -318,6 +323,9 @@ class TabView (gtk.Notebook):
 
     def _go_bm_cb(self, text):
         self.emit("go-bm-requested")
+
+    def _go_search_cb(self, text):
+        self.emit("go-search-requested")
 
     def _go_home_cb(self, text):
         self.emit("go-home-requested")
@@ -399,6 +407,8 @@ class WebBrowser(gtk.Window):
                                   gobject.TYPE_NONE, ()),
         "go-home-requested": (gobject.SIGNAL_RUN_FIRST,
                               gobject.TYPE_NONE, ()),
+        "go-search-requested": (gobject.SIGNAL_RUN_FIRST,
+                              gobject.TYPE_NONE, ()),
         "go-bm-requested": (gobject.SIGNAL_RUN_FIRST,
                               gobject.TYPE_NONE, ()),
         }
@@ -413,6 +423,7 @@ class WebBrowser(gtk.Window):
         self.connect("go-forward-requested", go_forward_requested_cb, tab_content)
         self.connect("new-tab-requested", new_tab_requested_cb, tab_content)
         self.connect("go-home-requested", load_requested_cb, HOME_PAGE, tab_content)
+        self.connect("go-search-requested", load_requested_cb, SEARCH_PAGE, tab_content)
         self.connect("go-bm-requested", load_requested_cb, BOOKMARK_PAGE, tab_content)
         self.connect("zoom-in-requested", zoom_in_requested_cb, tab_content)
         self.connect("zoom-out-requested", zoom_out_requested_cb, tab_content)
@@ -422,6 +433,7 @@ class WebBrowser(gtk.Window):
         tab_content.connect("focus-view-title-changed", self._title_changed_cb, toolbar)
         tab_content.connect("go-bm-requested", load_requested_cb, BOOKMARK_PAGE, tab_content)
         tab_content.connect("go-home-requested", load_requested_cb, HOME_PAGE, tab_content)
+        tab_content.connect("go-search-requested", load_requested_cb, SEARCH_PAGE, tab_content)
         toolbar.connect("refresh-requested", load_requested_cb, tab_content)
         toolbar.connect("go-back-requested", go_back_requested_cb, tab_content)
         toolbar.connect("go-forward-requested", go_forward_requested_cb, tab_content)
@@ -461,6 +473,8 @@ class WebBrowser(gtk.Window):
             self._go_new_tab_key()
         if str(Config.get("default", "go_home")) == str(mod):
             self._go_home_key()
+        if str(Config.get("default", "go_search")) == str(mod):
+            self._go_search_key()
         if str(Config.get("default", "zoom_in")) == str(mod):
             self._zoom_in_key()
         if str(Config.get("default", "zoom_out")) == str(mod):
@@ -480,6 +494,8 @@ class WebBrowser(gtk.Window):
         self.emit("new-tab-requested")
     def _go_home_key(self):
         self.emit("go-home-requested")
+    def _go_search_key(self):
+        self.emit("go-search-requested")
     def _zoom_in_key(self):
         self.emit("zoom-in-requested")
     def _zoom_out_key(self):
