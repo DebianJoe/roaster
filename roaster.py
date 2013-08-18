@@ -22,7 +22,7 @@
 # TODO:
 #
 # * fix tab relabelling
-# * bookmark integration w/ links2
+# * search page FREEDOM
 
 from gettext import gettext as _
 import sys
@@ -32,7 +32,6 @@ import gtk
 import pango
 import webkit
 import urllib
-import simplejson
 import ConfigParser
 
 #Set Up config reading for global options
@@ -317,12 +316,6 @@ class TabView (gtk.Notebook):
             menu.insert(wgetit, 0)
             menu.show_all()
 
-        if view.can_copy_clipboard():
-            # translate dialog
-            translate = gtk.MenuItem("Translate")
-            menu.insert(translate, 0)
-            translate.connect('activate', _trans_request_cb, view)
-
     def _go_bm_cb(self, text):
         self.emit("go-bm-requested")
 
@@ -439,7 +432,7 @@ class WebBrowser(gtk.Window):
         toolbar.connect("new-tab-requested", new_tab_requested_cb, tab_content)
 
         self.pbar = gtk.ProgressBar()
-        self.pbar.set_size_request(0, 18)
+        self.pbar.set_size_request(0, 10)
         
         label = gtk.Label()
         vbox = gtk.VBox(spacing=1)
@@ -619,49 +612,6 @@ def _wget_it(widget, url):
     else:
         print "You cannot wget that."
 
-def _trans_request_cb(self, view):
-    view.get_window().set_cursor(gtk.gdk.Cursor(gtk.gdk.WATCH))
-    clipboard = gtk.Clipboard()
-    view.copy_clipboard()
-    info_text = clipboard.request_text(clipboard_text_received)
-    view.get_window().set_cursor(None)
-
-def clipboard_text_received(clipboard, text, data):
-    # send google some text and they return it translated.
-    url = "http://ajax.googleapis.com/ajax/services/language/translate"
-    source = ""
-    dest = "en" # edit LANGUAGE to suit
-    params = {}
-    params['langpair'] = "%s|%s" % (source, dest)
-    params['v'] = '1.0'
-    params['q'] = text
-    data = urllib.urlencode(params)
-    response = urllib.urlopen(url, data)
-    translation = simplejson.load(response)
-    trans_dlg(translation)
-
-def trans_dlg(translation):
-    tmp_file = "/tmp/xxx.html"
-    preprefx = """<pre style="
-    white-space: -moz-pre-wrap;
-    white-space: -pre-wrap;
-    white-space: -o-pre-wrap;
-    white-space: pre-wrap;
-    word-wrap: break-word;
-    ">"""
-    presufx = """</pre>"""
-    htmhdr = """
-    <!doctype html public "-//w3c//dtd html 4.0 transitional//en">
-    <html>
-    <head><title></title></head>
-    <body>
-    """
-    htmftr = """
-    </body></html>
-    """
-    with open(tmp_file, "w+") as fd:
-        fd.write(preprefx+translation['responseData']['translatedText']+presufx)
-
     wkview = webkit.WebView()
     settings = wkview.get_settings()
     settings.set_property("enable-developer-extras", True)
@@ -676,13 +626,6 @@ def trans_dlg(translation):
     scrwin.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
     scrwin.set_size_request(500, 200)
     scrwin.show_all()
-
-    t8 = gtk.MessageDialog(None,
-            gtk.DIALOG_DESTROY_WITH_PARENT, gtk.MESSAGE_INFO,
-            gtk.BUTTONS_CLOSE, "Translation")
-    t8.vbox.pack_start(scrwin)
-    t8.run()
-    t8.destroy()
 
 def destroy_cb(window, tab_content):
     """destroy window resources"""
