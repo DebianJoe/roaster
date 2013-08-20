@@ -610,10 +610,11 @@ def _bookmark_link_cb(widget, url):
     alter_links(url)
 
 def alter_links(target):
+    directory = os.path.expanduser("~/.links2/bookmarks.html")
     #a function to reformat the links2 bookmark file
-    data="".join(open("/home/joe/.links2/bookmarks.html").readlines()[0:-2])
-    open("/home/joe/.links2/bookmarks.html","wb").write(data)
-    with open("/home/joe/.links2/bookmarks.html", "a") as myfile:
+    data="".join(open(directory).readlines()[0:-2])
+    open(directory,"wb").write(data)
+    with open(directory, "a") as myfile:
         myfile.write('\t<DT><A HREF="' + str(target) + '">' + str(target)
                      + '</A>\n' + '</DL><P>\n</HTML>')
 
