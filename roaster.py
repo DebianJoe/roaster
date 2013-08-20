@@ -112,7 +112,7 @@ class WebKitView(webkit.WebView):
     def __init__(self):
         webkit.WebView.__init__(self)
         settings = self.get_settings()
-        settings.set_property("enable-developer-extras", True)
+        settings.set_property("enable-developer-extras", False)
         settings.set_property("minimum-font-size", MIN_FONT_SIZE)
         self.set_zoom_level(DEFAULT_ZOOM)
         self.set_full_content_zoom(True)
@@ -634,7 +634,7 @@ def _wget_it(widget, url):
 
     wkview = webkit.WebView()
     settings = wkview.get_settings()
-    settings.set_property("enable-developer-extras", True)
+    settings.set_property("enable-developer-extras", False)
     settings.set_property("minimum-font-size", MIN_FONT_SIZE)
     wkview.set_zoom_level(DEFAULT_ZOOM)
     wkview.set_full_content_zoom(True)
@@ -696,11 +696,6 @@ def page_properties_cb(menu_item, web_view):
     window.add(vbox)
     window.show_all()
     window.present()
-
-def view_source_mode_requested_cb(widget, is_active, tab_content):
-    cview = current_view(tab_content)
-    cview.set_view_source_mode(is_active)
-    cview.reload()
 
 if __name__ == "__main__":
     if len(sys.argv) > 1:
