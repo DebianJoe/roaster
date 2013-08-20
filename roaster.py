@@ -300,7 +300,7 @@ class TabView (gtk.Notebook):
 
             searchReq = gtk.MenuItem("Web Search")
             menu.insert(searchReq, 0)
-            searchReq.connect('activate', self._go_search_cb)
+            searchReq.connect('activate', self._open_search, SEARCH_PAGE)
 
             homeReq = gtk.MenuItem("Go Home")
             menu.insert(homeReq, 0)
@@ -332,6 +332,9 @@ class TabView (gtk.Notebook):
 
     def _open_in_new_tab (self, menuitem, view):
         self.new_tab(self._hovered_uri)
+
+    def _open_search (self, menuitem, view):
+        self.new_tab(view)
 
     def _close_tab (self, label, child):
         page_num = self.page_num(child)
