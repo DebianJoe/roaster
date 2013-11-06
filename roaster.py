@@ -646,7 +646,10 @@ def _wget_it(widget, url):
     else:
         print "You cannot wget that."
 
-################## YOUTUBE DL FUNCTION #############################
+################## YOUTUBE DL FUNCTION ################################
+# youtube-dl -o ~/path/specified/by/config/"%(title)s.%(ext)s" is the #
+# proper way to get the title and extension of the video              #
+
 def _youtube_dl(widget, url):
     global Config
     target_dir = Config.get("default_dir", "d_dir")
