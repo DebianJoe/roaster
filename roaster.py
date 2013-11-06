@@ -276,7 +276,8 @@ class TabView (gtk.Notebook):
             #info_dialog_cb(self, url)
         else:
             web_view.load_uri(url)
-
+#TODO: finish youtube-dl logic after function works.
+####### Needs check for validity of youtube-dl before populate menu ######
     def _populate_page_popup_cb(self, view, menu):
         # misc
         if self._hovered_uri:
@@ -284,6 +285,11 @@ class TabView (gtk.Notebook):
             open_in_new_tab = gtk.MenuItem(_("Open Link in New Tab"))
             open_in_new_tab.connect("activate", self._open_in_new_tab, view)
             menu.insert(open_in_new_tab, 0)
+
+            youtubeDL = gtk.MenuItem("youtube-dl")
+            if ".youtube.com/watch" in self._hovered_uri:
+                menu.insert(youtubeDL, 0)
+                youtubeDL.connect('activate', _youtube_dl, self._hovered_uri)
 
             wgetit = gtk.MenuItem("wget it")
             menu.insert(wgetit, 0)
@@ -312,13 +318,20 @@ class TabView (gtk.Notebook):
 
             markC = gtk.MenuItem("Bookmark Current")
             menu.insert(markC, 0)
-            markC.connect('activate', _bookmark_current_cb, 
+            markC.connect('activate', _bookmark_current_cb,
                           view.get_main_frame().get_uri())
 
+            youtubeDL = gtk.MenuItem("youtube-dl")
+            if ".youtube.com/watch" in view.get_main_frame().get_uri():
+                youtubeDL.connect('activate', _youtube_dl,
+                           view.get_main_frame().get_uri())
+                menu.insert(youtubeDL, 0)
+
             wgetit = gtk.MenuItem("wget it")
-            wgetit.connect('activate', _wget_it, 
+            wgetit.connect('activate', _wget_it,
                            view.get_main_frame().get_uri())
             menu.insert(wgetit, 0)
+
             menu.show_all()
 
     def _go_bm_cb(self, text):
@@ -448,7 +461,7 @@ class WebBrowser(gtk.Window):
 
         self.pbar = gtk.ProgressBar()
         self.pbar.set_size_request(0, 10)
-        
+
         label = gtk.Label()
         vbox = gtk.VBox(spacing=1)
         vbox.pack_start(toolbar, expand=False, fill=False)
@@ -626,11 +639,18 @@ def _wget_it(widget, url):
     target_dir = Config.get("default_dir", "d_dir")
     print ("wget launched on target " + str(url) + "\n")
     if url != None:
-        os.system (str('wget -P ') + 
+        os.system (str('wget -P ') +
                    (str(target_dir)+" " + url))
-        print 
+        print
     else:
         print "You cannot wget that."
+
+################## YOUTUBE DL FUNCTION #############################
+def _youtube_dl(widget, url):
+    global Config
+    target_dir = Config.get("default_dir", "d_dir")
+    print ("youtube-dl launched on target " + str(url) + "\n")
+    os.system (str('youtube-dl ') + str(url))
 
     wkview = webkit.WebView()
     settings = wkview.get_settings()
