@@ -38,6 +38,7 @@ import ConfigParser
 Config = ConfigParser.ConfigParser()
 Config.read('/etc/roaster.conf')
 Config.read(os.path.expanduser('~/.roaster.conf'))
+YT_DIR = Config.get("default_dir", "y_dir")
 DEFAULT_PAGE = Config.get("default", "d_page")
 HOME_PAGE = Config.get("homepage", "homepage")
 BOOKMARK_PAGE = os.path.expanduser("~/") + ".links2/bookmarks.html"
@@ -651,11 +652,11 @@ def _wget_it(widget, url):
 # proper way to get the title and extension of the video              #
 
 def _youtube_dl(widget, url):
-    global Config
-    target_dir = Config.get("default_dir", "d_dir")
+    global YT_DIR
     print ("youtube-dl launched on target " + str(url) + "\n")
+    download_loc = str(YT_DIR) + str("%(title)s.%(ext)s")
     target = str(url)
-    subprocess.Popen(['youtube-dl', target])
+    subprocess.Popen(['youtube-dl', '-o', download_loc, target])
 
     wkview = webkit.WebView()
     settings = wkview.get_settings()
