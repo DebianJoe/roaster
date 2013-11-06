@@ -26,6 +26,7 @@
 from gettext import gettext as _
 import sys
 import os
+import subprocess
 import gobject
 import gtk
 import pango
@@ -650,7 +651,8 @@ def _youtube_dl(widget, url):
     global Config
     target_dir = Config.get("default_dir", "d_dir")
     print ("youtube-dl launched on target " + str(url) + "\n")
-    os.system (str('youtube-dl ') + str(url))
+    target = str(url)
+    subprocess.Popen(['youtube-dl', target])
 
     wkview = webkit.WebView()
     settings = wkview.get_settings()
