@@ -20,7 +20,7 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #
 # TODO:
-#
+# * finish the check logic for all files compatible with youtube-dl
 # * fix tab relabelling
 
 from gettext import gettext as _
