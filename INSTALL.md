@@ -18,6 +18,8 @@ touch bookmarks.html
 
 Also, it is necessary to migrate the .roaster.conf file into the user's home directory, or into /etc/and save it simply as roaster.conf (without the "." in front of it).  The local user's file will take precendence over the global one.  It's important to note that the file inside the git directory (or tarball, if you pull it using the web interface) is preceded by a "."  So, you'll have to enable viewing hidden files in you file manager, or list it with "ls -a".  
 
+Since many configuration options are used on a global scale, I'd leave the ones that you don't wish to customize.  Trying to clean things up ini the config is an effort in futility, and will lead to breakage.   
+
 If you have questions about installing (and I use that word loosely), then feel free to shoot me an email at <DebianJoe@linuxbbq.org> or simply stop by the forums and ask for help.  There are tons of systems that I cannot possibly test it on myself, so the feedback would be appreciated.
 
 Regards,
