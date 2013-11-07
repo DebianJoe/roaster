@@ -36,6 +36,9 @@ Faq
 *Q. What's up with the Bookmark file thing?  It's not there.  
 *A. The design is set up to integrate with links2.  The theory is that they share the same file for bookmarks, and so what is done in one will be reflected in the other.  If you don't have links2 installed, then simple create a <~/.links2/bookmarks.html> file for roaster to read/write to.  
 
+*Q. I get an option to use youtube-dl...wtf is that?  
+*A. It's a project <http://rg3.github.io/youtube-dl/> that allows the streams from YouTube to be downloaded onto your system and played back with the player of your choice.  It comes in most LinuxBBQ releases, and can be downloaded via apt from the Debian Repos.   
+
 *Q. I'd like to add (_______) feature.   
 *A. Then by all means, add it.  If you want it in the main line program, put in a pull request.
 

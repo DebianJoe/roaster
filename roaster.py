@@ -637,17 +637,14 @@ def alter_links(target):
 def _wget_it(widget, url):
     global Config
     target_dir = Config.get("default_dir", "d_dir")
-    print ("wget launched on target " + str(url) + "\n")
     if url != None:
         os.system (str('wget -P ') +
                    (str(target_dir)+" " + url))
-        print
     else:
         print "You cannot wget that."
 
 def _youtube_dl(widget, url):
     global YT_DIR
-    print ("youtube-dl launched on target " + str(url) + "\n")
     download_loc = str(YT_DIR) + str("%(title)s.%(ext)s")
     target = str(url)
     subprocess.Popen(['youtube-dl', '-o', download_loc, target])
