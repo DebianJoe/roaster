@@ -20,8 +20,8 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #
 # TODO:
-# * finish the check logic for all files compatible with youtube-dl
 # * fix tab relabelling
+# * fork processes for wget-it
 
 from gettext import gettext as _
 import sys
@@ -118,7 +118,6 @@ class WebKitView(webkit.WebView):
         settings.set_property("minimum-font-size", MIN_FONT_SIZE)
         self.set_zoom_level(DEFAULT_ZOOM)
         self.set_full_content_zoom(True)
-        # make sure the items will be added in the end
         self.connect_after("populate-popup", self.populate_popup)
         self.set_settings(settings)
 
@@ -278,8 +277,7 @@ class TabView (gtk.Notebook):
             #info_dialog_cb(self, url)
         else:
             web_view.load_uri(url)
-#TODO: finish youtube-dl logic after function works.
-####### Needs check for validity of youtube-dl before populate menu ######
+
     def _populate_page_popup_cb(self, view, menu):
         # misc
         if self._hovered_uri:
@@ -646,10 +644,6 @@ def _wget_it(widget, url):
         print
     else:
         print "You cannot wget that."
-
-################## YOUTUBE DL FUNCTION ################################
-# youtube-dl -o ~/path/specified/by/config/"%(title)s.%(ext)s" is the #
-# proper way to get the title and extension of the video              #
 
 def _youtube_dl(widget, url):
     global YT_DIR
