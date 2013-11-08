@@ -636,18 +636,16 @@ def alter_links(target):
 
 def _wget_it(widget, url):
     global Config
-    target_dir = Config.get("default_dir", "d_dir")
+    target_dir = os.path.expanduser(Config.get("default_dir", "d_dir"))
     if url != None:
-        os.system (str('wget -P ') +
-                   (str(target_dir)+" " + url))
-    else:
-        print "You cannot wget that."
+        subprocess.Popen(['wget', '-P', target_dir, url])
 
 def _youtube_dl(widget, url):
     global YT_DIR
     download_loc = str(YT_DIR) + str("%(title)s.%(ext)s")
+    dl_target = os.path.expanduser(download_loc)
     target = str(url)
-    subprocess.Popen(['youtube-dl', '-o', download_loc, target])
+    subprocess.Popen(['youtube-dl', '-o', dl_target, target])
 
     wkview = webkit.WebView()
     settings = wkview.get_settings()
