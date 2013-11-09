@@ -21,7 +21,6 @@
 #
 # TODO:
 # * fix tab relabelling
-# * fork processes for wget-it
 
 from gettext import gettext as _
 import sys
@@ -257,6 +256,7 @@ class TabView (gtk.Notebook):
         if not url:
             label = TabLabel("New Tab", scrolled_window)
         else:
+            label = TabLabel("New Tab", scrolled_window)
             label = TabLabel(url, scrolled_window)
         label.connect("close", self._close_tab)
         label.show_all()
@@ -274,7 +274,6 @@ class TabView (gtk.Notebook):
         self._hovered_uri = None
         if not url:
             url = ""
-            #info_dialog_cb(self, url)
         else:
             web_view.load_uri(url)
 
@@ -626,8 +625,8 @@ def _bookmark_link_cb(widget, url):
     alter_links(url)
 
 def alter_links(target):
+    """Insert Bookmarks into links2 Bookmark file"""
     directory = os.path.expanduser("~/.links2/bookmarks.html")
-    #a function to reformat the links2 bookmark file
     data="".join(open(directory).readlines()[0:-2])
     open(directory,"wb").write(data)
     with open(directory, "a") as myfile:
